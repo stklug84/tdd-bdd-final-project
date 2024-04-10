@@ -184,28 +184,6 @@ class TestProductRoutes(TestCase):
         # Return data should contain error message
         data = response.get_json()
         self.assertIn("was not found!", data["message"])
-
-    ######################################################################
-    # READ A PRODUCT
-    ######################################################################
-    @app.route("/products/<int:product_id>", methods=["GET"])
-    def get_products(product_id):
-        """
-        Retrieve a single Product
-
-        This endpoint will return a Product based on it's id
-        """
-        app.logger.info("Request to Retrieve a product with id [%s]", product_id)
-
-        # Find product
-        product = Product.find(product_id)
-        
-        # Abort with 404
-        if not product:
-            abort(status.HTTP_404_NOT_FOUND, f"Product '{product_id}' was not found!")
-
-        # Return serialized product
-        return product.serialize(), status.HTTP_200_OK
     
     ######################################################################
     # Utility functions
