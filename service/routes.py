@@ -113,10 +113,8 @@ def get_products(product_id):
     This endpoint will return a Product based on it's id
     """
     app.logger.info("Request to Retrieve a product with id [%s]", product_id)
-
     # Find product
     product = Product.find(product_id)
-        
     # Abort with 404
     if not product:
         abort(status.HTTP_404_NOT_FOUND, f"Product '{product_id}' was not found!")
@@ -128,16 +126,43 @@ def get_products(product_id):
 ######################################################################
 # U P D A T E   A   P R O D U C T
 ######################################################################
+@app.route("/products/<int:product_id>", methods=["PUT"])
+def update_products(product_id):
+    """
+    Update a Product
 
-#
-# PLACE YOUR CODE TO UPDATE A PRODUCT HERE
-#
+    This endpoint will update a Product based the body that is posted
+    """
+    app.logger.info("Request to Update a product with id [%s]", product_id)
+    check_content_type("application/json")
+    # Get product by ID
+    product = Product.find(product_id)
+    if not product:
+        abort(status.HTTP_404_NOT_FOUND, f"Product '{product_id}' was not found!")
+    # Deserialize product request
+    product.deserialize(request.get_json())
+    # Update product
+    product.update()
+    # Serialize product and return 200
+    return product.serialize(), status.HTTP_200_OK
+
 
 ######################################################################
 # D E L E T E   A   P R O D U C T
 ######################################################################
+def delete_products(product_id):
+    """
+    Delete a Product
 
+    This endpoint will delete a Product based the id specified in the path
+    """
+    app.logger.info("Request to Delete a product with id [%s]", product_id)
+    # Get product with given product id
+    product = Product.find(product_id)
+    # Delete product if it exists
+    if product:
+        product.delete()
 
-#
-# PLACE YOUR CODE TO DELETE A PRODUCT HERE
-#
+    # Return empty response with 204
+    return "", status.HTTP_204_NO_CONTENT
+

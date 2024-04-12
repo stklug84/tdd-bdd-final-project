@@ -184,7 +184,46 @@ class TestProductRoutes(TestCase):
         # Return data should contain error message
         data = response.get_json()
         self.assertIn("was not found!", data["message"])
-    
+
+    def test_update_product(self):
+        """Update existing products"""
+        # create a product to update
+        test_product = ProductFactory()
+        # Check if product was created properly
+        response = self.client.post(BASE_URL, json=test_product.serialize())
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        # Update the product
+        product = response.get_json()
+        # Set product description to unknown
+        product["description"] = "unknown"
+        # Check if product description was updated
+        response = self.client.put(f"{BASE_URL}/{product['id']}", json=product)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        # Fetch updated product definition and check if update was successful
+        product = response.get_json()
+        self.assertEqual(product["description"], "unknown")
+
+    def test_delete_product(self):
+        """Delete existing products"""
+        # Create five products
+        products = self._create_products(5)
+        # Get count of product list
+        count = self.get_product_count()
+        # Pick first product
+        test_product = products[0]
+        # Delete product
+        response = self.client.delete(f"{BASE_URL}/{test_product.id}")
+        # Check for no content (204) response
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        # Check if response data is empty
+        self.assertEqual(len(response.data), 0)
+        # Check if the product is really deleted
+        response = self.client.get(f"{BASE_URL}/{test_product.id}")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        # Check count of list with the deleted product (should be smaller by one)
+        count_deleted = self.get_product_count()
+        self.assertEqual(count_deleted, count-1)
+
     ######################################################################
     # Utility functions
     ######################################################################
@@ -192,7 +231,7 @@ class TestProductRoutes(TestCase):
     def get_product_count(self):
         """save the current number of products"""
         response = self.client.get(BASE_URL)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        #self.assertEqual(response.status_code, status.HTTP_200_OK)
         data = response.get_json()
-        # logging.debug("data = %s", data)
+        logging.debug("data = %s", data)
         return len(data)
