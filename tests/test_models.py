@@ -116,3 +116,16 @@ class TestProductModel(unittest.TestCase):
         self.assertEqual(Decimal(fetched.price), product.price)
         self.assertEqual(fetched.available, product.available)
         self.assertEqual(fetched.category, product.category)
+
+    def test_read_product_pass(self):
+        """It should read a product from the database and pass the test"""
+        product = ProductFactory()
+        product.id = None
+        product.create()
+        fetched = Product.find(product.id)
+        self.assertIsNotNone(fetched)
+        self.assertEqual(product.name, fetched.name)
+        self.assertEqual(product.description, fetched.description)
+        self.assertEqual(Decimal(product.price), Decimal(fetched.price))
+        self.assertEqual(product.available, fetched.available)
+        self.assertEqual(product.category, fetched.category)
