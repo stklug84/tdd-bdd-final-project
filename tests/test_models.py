@@ -181,7 +181,7 @@ class TestProductModel(unittest.TestCase):
         results = Product.find_by_name("UniqueProductName").all()
         self.assertEqual(len(results), 1)
         self.assertEqual(results[0].name, "UniqueProductName")
- 
+
     def test_find_by_category(self):
         """It should search for products by category and return the correct result."""
         # Create products with distinct categories
