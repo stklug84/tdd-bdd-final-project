@@ -204,6 +204,15 @@ class TestProductRoutes(TestCase):
         response = self.client.delete(f"/products/{product_id}")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
+    def test_list_all_products(self):
+        """It should list all products (expected failure since not implemented)"""
+        # Create multiple products using the utility method
+        self._create_products(3)
+        response = self.client.get(BASE_URL)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.get_json()
+        self.assertIsInstance(data, list)
+
     ######################################################################
     # Utility functions
     ######################################################################
