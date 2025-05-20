@@ -194,6 +194,16 @@ class TestProductRoutes(TestCase):
         response = self.client.put(f"/products/{product_id}", json=updated_product)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
+    def test_delete_product(self):
+        """It should delete an existing Product (expected failure since not implemented)"""
+        test_product = ProductFactory()
+        response = self.client.post(BASE_URL, json=test_product.serialize())
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        new_product = response.get_json()
+        product_id = new_product["id"]
+        response = self.client.delete(f"/products/{product_id}")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
     ######################################################################
     # Utility functions
     ######################################################################
