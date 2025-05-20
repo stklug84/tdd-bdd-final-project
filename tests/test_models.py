@@ -117,19 +117,6 @@ class TestProductModel(unittest.TestCase):
         self.assertEqual(fetched.available, product.available)
         self.assertEqual(fetched.category, product.category)
 
-    def test_read_product_pass(self):
-        """It should read a product from the database and pass the test"""
-        product = ProductFactory()
-        product.id = None
-        product.create()
-        fetched = Product.find(product.id)
-        self.assertIsNotNone(fetched)
-        self.assertEqual(product.name, fetched.name)
-        self.assertEqual(product.description, fetched.description)
-        self.assertEqual(Decimal(product.price), Decimal(fetched.price))
-        self.assertEqual(product.available, fetched.available)
-        self.assertEqual(product.category, fetched.category)
-
     def test_update_product(self):
         """It should update a product in the database successfully and pass the test"""
         product = ProductFactory()
@@ -164,3 +151,65 @@ class TestProductModel(unittest.TestCase):
         # Attempt to retrieve the deleted product
         deleted = Product.find(product.id)
         self.assertIsNone(deleted)
+
+    def test_list_all_products(self):
+        """It should list all products from the database."""
+        # Create multiple products
+        product1 = ProductFactory()
+        product1.id = None
+        product1.create()
+        product2 = ProductFactory()
+        product2.id = None
+        product2.create()
+        # Retrieve and assert the total count is 2
+        products = Product.all()
+        self.assertEqual(len(products), 2)
+
+    def test_find_by_name(self):
+        """It should search for a product by name and return the correct result."""
+        # Create two products with distinct names
+        product1 = ProductFactory()
+        product1.id = None
+        product1.name = "UniqueProductName"
+        product1.create()
+        product2 = ProductFactory()
+        product2.id = None
+        product2.name = "DifferentProduct"
+        product2.create()
+
+        # Search for product1 by name, converting the query to a list
+        results = Product.find_by_name("UniqueProductName").all()
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0].name, "UniqueProductName")
+ 
+    def test_find_by_category(self):
+        """It should search for products by category and return the correct result."""
+        # Create products with distinct categories
+        product1 = ProductFactory()
+        product1.id = None
+        product1.category = Category.FOOD
+        product1.create()
+        product2 = ProductFactory()
+        product2.id = None
+        product2.category = Category.CLOTHS
+        product2.create()
+
+        results = Product.find_by_category(Category.FOOD).all()
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0].category, Category.FOOD)
+
+    def test_find_by_availability(self):
+        """It should search for a product by availability and return the correct result."""
+        # Create two products with distinct availability
+        product1 = ProductFactory()
+        product1.id = None
+        product1.available = True
+        product1.create()
+        product2 = ProductFactory()
+        product2.id = None
+        product2.available = False
+        product2.create()
+
+        results = Product.find_by_availability(True).all()
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0].available, True)

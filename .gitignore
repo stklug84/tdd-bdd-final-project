@@ -106,3 +106,5 @@ ENV/
 
 # Rope project settings
 .ropeproject
+.aider*
+aider*
