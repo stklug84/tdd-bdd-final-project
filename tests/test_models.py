@@ -104,3 +104,15 @@ class TestProductModel(unittest.TestCase):
     #
     # ADD YOUR TEST CASES HERE
     #
+    def test_read_product(self):
+        """It should Read a product from the database and ensure it returns correctly."""
+        product = ProductFactory()
+        product.id = None
+        product.create()
+        fetched = Product.find(product.id)
+        self.assertIsNotNone(fetched)
+        self.assertEqual(fetched.name, product.name)
+        self.assertEqual(fetched.description, product.description)
+        self.assertEqual(Decimal(fetched.price), product.price)
+        self.assertEqual(fetched.available, product.available)
+        self.assertEqual(fetched.category, product.category)
