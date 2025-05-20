@@ -129,3 +129,24 @@ class TestProductModel(unittest.TestCase):
         self.assertEqual(Decimal(product.price), Decimal(fetched.price))
         self.assertEqual(product.available, fetched.available)
         self.assertEqual(product.category, fetched.category)
+
+    def test_update_product(self):
+        """It should update a product in the database successfully and pass the test"""
+        product = ProductFactory()
+        product.id = None
+        product.create()
+        # Update product properties
+        product.name = "Updated Product Name"
+        product.description = "Updated description"
+        product.price = product.price + Decimal("10.00")
+        product.available = not product.available
+        product.category = Category.FOOD if product.category != Category.FOOD else Category.CLOTHS
+        product.update()
+        # Retrieve updated product
+        updated = Product.find(product.id)
+        self.assertIsNotNone(updated)
+        self.assertEqual(updated.name, "Updated Product Name")
+        self.assertEqual(updated.description, "Updated description")
+        self.assertEqual(updated.price, product.price)
+        self.assertEqual(updated.available, product.available)
+        self.assertEqual(updated.category, product.category)
